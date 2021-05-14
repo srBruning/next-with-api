@@ -1,44 +1,56 @@
-import { post, get } from "../lib/request";
+import { post, get } from '../lib/request'
 
 export const createUser = async (
   name,
   email,
   password,
-  password_confirmation
+  password_confirmation,
 ) => {
   try {
-    const response = await post("/users", {
-      user: {
+    const response = await post('/api/users/', { 
         name,
-        email,
+        username: email,
         password,
-        password_confirmation
-      }
-    });
-    return response;
+        password_confirmation,
+      
+    })
+    return response
   } catch (error) {
+    try {
+      return error.response.data.error
+    } catch (er) {}
+
     return error.response && error.response.status === 422
-      ? "Email is already taken."
-      : "Unknown error. Please try again";
+      ? 'Email is already taken.'
+      : 'Unknown error. Please try again'
   }
-};
+}
 
 export const getUsers = () => {
-  return getData("/users", null);
-};
+  // const  response =  getData("/users", null);
+  const response = {
+    data: [
+      { id: 1, name: 'Luke Skywalker', email: 'luke@starwars.com' },
+      { id: 2, name: 'Han Solo', email: 'han@starwars.com' },
+      { id: 3, name: 'Alan Turing', email: 'alan@turingmachine.com' },
+    ],
+  }
+  // console.log(response)
+  return response
+}
 
 export const getUser = (jwt, id) => {
-  return getData(`/users/${id}`, jwt);
-};
+  return getData(`/users/${id}`, jwt)
+}
 
-export const getCurrentUser = jwt => {
-  return getData("/users/current", jwt);
-};
+export const getCurrentUser = (jwt) => {
+  return getData('/api/users/show', jwt)
+}
 
 const getData = (endpoint, jwt) => {
   try {
-    return get(endpoint, jwt);
+    return get(endpoint, jwt)
   } catch (error) {
-    return error;
+    return error
   }
-};
+}
